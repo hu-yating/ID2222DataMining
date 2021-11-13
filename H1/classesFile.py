@@ -18,10 +18,11 @@ class Shingling:
 
 
     def ordered_hash(self, input_sh):
+        random.seed(111)
         a = random.randint(0,100)
         b = random.randint(0,100)        #convert string into int
-        return set(sorted(set((7*(int.from_bytes(x.encode(), 'little')) +13)%1039205197 for x in input_sh)))
-
+        return sorted(set((7*(int.from_bytes(x.encode(), 'little')) +13)%1039205197 for x in input_sh)) #it's a list but with no duplicates
+                                                                                                        #so immitates sets in the format of list
 #QUESTION 2
 '''
 class CompareSets:
@@ -119,7 +120,7 @@ class LHS:
                     ordered_set = set(self.signatures[i].iloc[:rows])
                     mh.append(MinHashing(ordered_set,20).hashing())
 
-                if CompareSignatures(mh[0],mh[1]).estimate() <= self.threshold:
+                if CompareSignatures(mh[0],mh[1]).estimate() < self.threshold:
                     print("Column",col1,"and",col2,"have Jaccard similarity:",
                          CompareSignatures(mh[0],mh[1]).estimate(),"which is lower than",self.threshold,
                           "so they are not similar")
@@ -129,7 +130,7 @@ class LHS:
                           CompareSignatures(mh[0],mh[1]).estimate(),"which is higher than",self.threshold,"so they are similar")
         else:
             print("No candidates")
-
+        
         rows_min = self.signatures.count().min()
         count = 0
         similar = []
@@ -146,3 +147,4 @@ class LHS:
                     count+=1
                     similar.append([s,f])
         print("#similar=",count,"specifically:", similar,"from them",self.cand_count,"were found by candidates (for finding errors in candidates)")
+        
