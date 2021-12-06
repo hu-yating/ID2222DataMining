@@ -41,7 +41,7 @@ public class Jabeja {
     // modified by if-statement
     if (this.annealing){
         this.T = 1;
-        this.Max_T = 1;
+        this.MAX_T = 1;
         config.setDelta((float) 0.9);
     }
     else{
@@ -69,7 +69,7 @@ public class Jabeja {
   */
   private double computeAcceptance(double new_val, double old_val){
       if (FLAG.equals("flag")){
-          return Math.exp((new_val - old_val) / Mat.pow(T, exponent_round));
+          return Math.exp((new_val - old_val) / Math.pow(T, exponent_round));
       }
       else{
           return Math.exp((new_val - old_val) / T);
@@ -131,7 +131,7 @@ public class Jabeja {
     // swap the colors
     // TODO - done by adding if-statement
     if (partner != null){
-        int aux = parnet.getColor();
+        int aux = partner.getColor();
         partner.setColor(nodep.getColor());
         nodep.setColor(aux);
         numberOfSwaps++;
