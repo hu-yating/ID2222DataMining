@@ -17,8 +17,19 @@ public class Jabeja {
   private final List<Integer> nodeIds;
   private int numberOfSwaps;
   private int round;
-  private float T;
+  //private float T;
   private boolean resultFileCreated = false;
+
+  // added
+  private double T;
+  private final double MIN_T = Math.pow(10, -5);
+  private boolean annealing = true;
+  private int reset_rounds = 0;
+  private int exponent_round = 0;
+  private double MAX_T;
+  private final String FLAG = "flag";
+
+
 
   //-------------------------------------------------------------------
   public Jabeja(HashMap<Integer, Node> graph, Config config) {
@@ -27,7 +38,15 @@ public class Jabeja {
     this.round = 0;
     this.numberOfSwaps = 0;
     this.config = config;
-    this.T = config.getTemperature();
+    // modified by if-statement
+    if (this.annealing){
+        this.T = 1;
+        this.Max_T = 1;
+        config.setDelta((float) 0.9);
+    }
+    else{
+        this.T = config.getTemperature();
+    }
   }
 
 
@@ -46,14 +65,43 @@ public class Jabeja {
   }
 
   /**
+  * - Added for acceptance probability
+  */
+  private double computeAcceptance(double new_val, double old_val){
+      if (FLAG.equals("flag")){
+          return Math.exp((new_val - old_val) / Mat.pow(T, exponent_round));
+      }
+      else{
+          return Math.exp((new_val - old_val) / T);
+      }
+  }
+
+  /**
    * Simulated analealing cooling function
    */
   private void saCoolDown(){
-    // TODO for second task
-    if (T > 1)
-      T -= config.getDelta();
-    if (T < 1)
-      T = 1;
+    // TODO for second task - done
+    if (annealing){
+        exponent_round++;
+        T *= config.getDelta();
+        if (T < MIN_T){
+            T = MIN_T;
+        }
+        if (T == MIN_T){
+            reset_rounds++;
+            if (reset_rounds == 400){
+                T = 1;
+                reset_rounds = 0;
+                exponent_round = 0;
+            }
+        }
+    }
+    else{
+        if (T > 1)
+        T -= config.getDelta();
+        if (T < 1)
+        T = 1;
+    }
   }
 
   /**
@@ -67,17 +115,27 @@ public class Jabeja {
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.LOCAL) {
       // swap with random neighbors
-      // TODO
+      // TODO - done by adding partner
+      partner = findPartner(nodeId, getNeighbors(nodep));
     }
 
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) {
       // if local policy fails then randomly sample the entire graph
-      // TODO
+      // TODO - done by adding if-statement
+      if (partner == null){
+          partner = findPartner(nodeId, getSample(nodeId));
+      }
     }
 
     // swap the colors
-    // TODO
+    // TODO - done by adding if-statement
+    if (partner != null){
+        int aux = parnet.getColor();
+        partner.setColor(nodep.getColor());
+        nodep.setColor(aux);
+        numberOfSwaps++;
+    }
   }
 
   public Node findPartner(int nodeId, Integer[] nodes){
@@ -87,7 +145,36 @@ public class Jabeja {
     Node bestPartner = null;
     double highestBenefit = 0;
 
-    // TODO
+    // TODO - done 
+    for(Integer q: nodes){
+        Node nodeq = entireGraph.get(q);
+        int degree_pp = getDegree(nodep, nodep.getColor());
+        int degree_qq = getDegree(nodeq, nodeq.getColor());
+
+        double old_d = Math.pow(degree_pp, config.getAlpha()) + Math.pow(degree_qq, config.getAlpha());
+
+        int degree_pq = getDegree(nodep, nodeq.getColor());
+        int degree_qp = getDegree(nodeq, nodep.getColor());
+
+        double new_d = Math.pow(degree_pq, config.getAlpha()) + Math.pow(degree_qp, config.getAlpha());
+
+        if (annealing){
+            Random random = new Random();
+            double prob = random.nextDouble();
+            double acceptance = computeAcceptance(new_d, old_d);
+
+            if (new_d != old_d && acceptance > prob && acceptance > highestBenefit){
+                bestPartner = nodeq;
+                highestBenefit = acceptance;
+            }
+        }
+        else{
+            if (new_d * T > old_d && new_d > highestBenefit){
+                bestPartner = nodeq;
+                highestBenefit = new_d;
+            }
+        }
+    }
 
     return bestPartner;
   }
