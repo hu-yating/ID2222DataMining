@@ -24,9 +24,7 @@ public class Jabeja {
   private double T;
   private final double MIN_T = Math.pow(10, -5);
   private boolean annealing = true;
-  private int reset_rounds = 0;
-  private int exponent_round = 0;
-  private boolean flag = true;
+  private boolean bonus = true;
 
 
 
@@ -66,8 +64,8 @@ public class Jabeja {
   * - Added for acceptance probability
   */
   private double computeAcceptance(double new_val, double old_val){
-      if (flag){
-          return Math.exp((new_val - old_val) / Math.pow(T, exponent_round)); // improved one
+      if (bonus){
+          return 1 / (1 + Math.exp((new_val - old_val) / T)) ; // improved one
       }
       else{
           return Math.exp((new_val - old_val) / T); // acceptance probability based on benefit
@@ -80,18 +78,9 @@ public class Jabeja {
   private void saCoolDown(){
     // TODO for second task - done
     if (annealing){
-        exponent_round++;
         T *= config.getDelta();
         if (T < MIN_T){
             T = MIN_T;
-        }
-        if (T == MIN_T){
-            reset_rounds++;
-            if (reset_rounds == 400){
-                T = 1;
-                reset_rounds = 0;
-                exponent_round = 0;
-            }
         }
     }
     else{
