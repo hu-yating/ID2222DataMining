@@ -26,7 +26,6 @@ public class Jabeja {
   private boolean annealing = true;
   private int reset_rounds = 0;
   private int exponent_round = 0;
-  private double MAX_T;
   private final String FLAG = "flag";
 
 
@@ -40,9 +39,8 @@ public class Jabeja {
     this.config = config;
     // modified by if-statement
     if (this.annealing){
-        this.T = 1;
-        this.MAX_T = 1;
-        config.setDelta((float) 0.9);
+        this.T = 1; // usually starts at 1
+        config.setDelta((float) 0.9); // delta typically between 0.8 and 0.99
     }
     else{
         this.T = config.getTemperature();
@@ -123,15 +121,15 @@ public class Jabeja {
             || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) {
       // if local policy fails then randomly sample the entire graph
       // TODO - done by adding if-statement
-      if (partner == null){
-          partner = findPartner(nodeId, getSample(nodeId));
+      if (partner == null){ // equals line 4 of algo
+          partner = findPartner(nodeId, getSample(nodeId)); // equals line 5 of algo
       }
     }
 
     // swap the colors
     // TODO - done by adding if-statement
-    if (partner != null){
-        int aux = partner.getColor();
+    if (partner != null){ // equals line 7 of algo
+        int aux = partner.getColor(); // color exchange handshake between p and partner
         partner.setColor(nodep.getColor());
         nodep.setColor(aux);
         numberOfSwaps++;
@@ -146,21 +144,21 @@ public class Jabeja {
     double highestBenefit = 0;
 
     // TODO - done 
-    for(Integer q: nodes){
+    for(Integer q: nodes){ // equals line 19 of algo
         Node nodeq = entireGraph.get(q);
-        int degree_pp = getDegree(nodep, nodep.getColor());
-        int degree_qq = getDegree(nodeq, nodeq.getColor());
+        int degree_pp = getDegree(nodep, nodep.getColor()); // equals line 20 of algo
+        int degree_qq = getDegree(nodeq, nodeq.getColor()); // equals line 21 of algo
 
-        double old_d = Math.pow(degree_pp, config.getAlpha()) + Math.pow(degree_qq, config.getAlpha());
+        double old_d = Math.pow(degree_pp, config.getAlpha()) + Math.pow(degree_qq, config.getAlpha()); // equals line 22 of algo
 
-        int degree_pq = getDegree(nodep, nodeq.getColor());
-        int degree_qp = getDegree(nodeq, nodep.getColor());
+        int degree_pq = getDegree(nodep, nodeq.getColor()); // equals line 23 of algo
+        int degree_qp = getDegree(nodeq, nodep.getColor()); // equals line 24 of algo
 
-        double new_d = Math.pow(degree_pq, config.getAlpha()) + Math.pow(degree_qp, config.getAlpha());
+        double new_d = Math.pow(degree_pq, config.getAlpha()) + Math.pow(degree_qp, config.getAlpha()); // equals line 25 of algo
 
-        if (annealing){
-            Random random = new Random();
-            double prob = random.nextDouble();
+        if (annealing){ // added for annealing
+            Random random = new Random(); // first generate a random solution
+            double prob = random.nextDouble(); // 
             double acceptance = computeAcceptance(new_d, old_d);
 
             if (new_d != old_d && acceptance > prob && acceptance > highestBenefit){
@@ -169,14 +167,14 @@ public class Jabeja {
             }
         }
         else{
-            if (new_d * T > old_d && new_d > highestBenefit){
-                bestPartner = nodeq;
-                highestBenefit = new_d;
+            if (new_d * T > old_d && new_d > highestBenefit){ // equals line 26 of algo
+                bestPartner = nodeq; // equals line 27 of algo
+                highestBenefit = new_d; // equals line 28 of algo
             }
         }
     }
 
-    return bestPartner;
+    return bestPartner; // equals line 31 of algo
   }
 
   /**
