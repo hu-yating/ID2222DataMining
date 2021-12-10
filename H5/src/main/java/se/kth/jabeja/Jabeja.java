@@ -26,7 +26,7 @@ public class Jabeja {
   private boolean annealing = true;
   private int reset_rounds = 0;
   private int exponent_round = 0;
-  private final String FLAG = "flag";
+  private boolean flag = true;
 
 
 
@@ -66,7 +66,7 @@ public class Jabeja {
   * - Added for acceptance probability
   */
   private double computeAcceptance(double new_val, double old_val){
-      if (FLAG.equals("flag")){
+      if (flag){
           return Math.exp((new_val - old_val) / Math.pow(T, exponent_round));
       }
       else{
