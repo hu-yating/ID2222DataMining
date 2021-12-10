@@ -43,7 +43,7 @@ public class Jabeja {
         config.setDelta((float) 0.9); // delta typically between 0.8 and 0.99
     }
     else{
-        this.T = config.getTemperature();
+        this.T = config.getTemperature(); // without annealing
     }
   }
 
@@ -67,10 +67,10 @@ public class Jabeja {
   */
   private double computeAcceptance(double new_val, double old_val){
       if (flag){
-          return Math.exp((new_val - old_val) / Math.pow(T, exponent_round));
+          return Math.exp((new_val - old_val) / Math.pow(T, exponent_round)); // improved one
       }
       else{
-          return Math.exp((new_val - old_val) / T);
+          return Math.exp((new_val - old_val) / T); // acceptance probability based on benefit
       }
   }
 
@@ -98,7 +98,7 @@ public class Jabeja {
         if (T > 1)
         T -= config.getDelta();
         if (T < 1)
-        T = 1;
+        T = 1; // always min value for T
     }
   }
 
@@ -159,11 +159,11 @@ public class Jabeja {
         if (annealing){ // added for annealing
             Random random = new Random(); // first generate a random solution
             double prob = random.nextDouble(); // 
-            double acceptance = computeAcceptance(new_d, old_d);
+            double acceptance = computeAcceptance(new_d, old_d); // compute the new acceptance
 
-            if (new_d != old_d && acceptance > prob && acceptance > highestBenefit){
-                bestPartner = nodeq;
-                highestBenefit = acceptance;
+            if (new_d != old_d && acceptance > prob && acceptance > highestBenefit){ // when the values are different, we move
+                bestPartner = nodeq;  
+                highestBenefit = acceptance; // updating values for highest benefit
             }
         }
         else{
