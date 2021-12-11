@@ -22,7 +22,7 @@ public class Jabeja {
 
   // added
   private double T;
-  private final double MIN_T = Math.pow(10, -5);
+  private final double min_t = Math.pow(10, -5);
   private boolean annealing = true;
   private int reset_rounds = 0; //to restart simulated-annealing again after #rounds
   private boolean bonus = true;
@@ -80,10 +80,10 @@ public class Jabeja {
     // TODO for second task - done
     if (annealing){
         T *= config.getDelta();
-        if (T < MIN_T){
-            T = MIN_T;
+        if (T < min_t){
+            T = min_t;
         }
-        if (T == MIN_T){
+        if (T == min_t){
             reset_rounds++;
             if (reset_rounds == 400){ //restart simulated-annealing again after 400 rounds
                 T = 1;
