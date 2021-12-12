@@ -66,7 +66,7 @@ public class Jabeja {
   */
   private double computeAcceptance(double new_val, double old_val){
       if (bonus){
-        return Math.exp(((1/old_val) - (1/new_val)) / T)
+        return Math.exp(((1/old_val) - (1/new_val)) / T);
           //return 1 / (1 + Math.exp((new_val - old_val) / T)) ; // gave bad performance
       }
       else{
