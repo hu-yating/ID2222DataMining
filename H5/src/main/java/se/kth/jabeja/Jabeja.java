@@ -22,9 +22,9 @@ public class Jabeja {
 
   // added
   private double T;
-  private final double min_t = Math.pow(10, -5);
+  private final double min_t = Math.pow(10, -5); // part 2: based on example code
   private boolean annealing = true;
-  private int reset_rounds = 0; //to restart simulated-annealing again after #rounds
+  private int reset_rounds = 0; 
   private boolean bonus = true;
 
 
@@ -39,10 +39,10 @@ public class Jabeja {
     // modified by if-statement
     if (this.annealing){
         this.T = 1; // usually starts at 1
-        config.setDelta((float) 0.9); // delta typically between 0.8 and 0.99
+        config.setDelta((float) 0.9); // part 2: delta typically between 0.8 and 0.99
     }
     else{
-        this.T = config.getTemperature(); // without annealing
+        this.T = config.getTemperature(); // without annealing of part 2
     }
   }
 
@@ -70,7 +70,7 @@ public class Jabeja {
           //return 1 / (1 + Math.exp((new_val - old_val) / T)) ; // gave bad performance
       }
       else{
-          return Math.exp((new_val - old_val) / T); // acceptance probability based on benefit
+          return Math.exp((new_val - old_val) / T); // acceptance probability for part 2
       }
   }
 
@@ -79,12 +79,12 @@ public class Jabeja {
    */
   private void saCoolDown(){
     // TODO for second task - done
-    if (annealing){
-        T *= config.getDelta();
+    if (annealing){ // part 2
+        T *= config.getDelta(); // update T by multiplying with delta
         if (T < min_t){
-            T = min_t;
+            T = min_t; // lowest point
         }
-        if (T == min_t){
+        if (T == min_t){ // reset when lowest point has reached 
             reset_rounds++;
             if (reset_rounds == 400){ //restart simulated-annealing again after 400 rounds
                 T = 1;
@@ -92,11 +92,11 @@ public class Jabeja {
             }
         }
     }
-    else{
-        if (T > 1)
-        T -= config.getDelta();
-        if (T < 1)
-        T = 1; // always min value for T
+    else{ // part 1
+        if (T > 1) 
+        T -= config.getDelta(); // update T by substracting delta (line 10 of algo)
+        if (T < 1) // (line 11 of algo)
+        T = 1; // always min value for T (line 12 of algo)
     }
   }
 
@@ -109,50 +109,50 @@ public class Jabeja {
     Node nodep = entireGraph.get(nodeId);
 
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
-            || config.getNodeSelectionPolicy() == NodeSelectionPolicy.LOCAL) {
+            || config.getNodeSelectionPolicy() == NodeSelectionPolicy.LOCAL) { // hybrid is first applying local
       // swap with random neighbors
       // TODO - done by adding partner
-      partner = findPartner(nodeId, getNeighbors(nodep));
+      partner = findPartner(nodeId, getNeighbors(nodep)); // (line 3 of algo)
     }
 
     if (config.getNodeSelectionPolicy() == NodeSelectionPolicy.HYBRID
-            || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) {
+            || config.getNodeSelectionPolicy() == NodeSelectionPolicy.RANDOM) { // hybrid is secondly applying random
       // if local policy fails then randomly sample the entire graph
       // TODO - done by adding if-statement
-      if (partner == null){ // equals line 4 of algo
-          partner = findPartner(nodeId, getSample(nodeId)); // equals line 5 of algo
+      if (partner == null){ // (line 4 of algo)
+          partner = findPartner(nodeId, getSample(nodeId)); // (line 5 of algo)
       }
     }
 
     // swap the colors
     // TODO - done by adding if-statement
-    if (partner != null){ // equals line 7 of algo
+    if (partner != null){ //  (line 7 of algo)
         int aux = partner.getColor(); // color exchange handshake between p and partner
         partner.setColor(nodep.getColor());
         nodep.setColor(aux);
-        numberOfSwaps++;
+        numberOfSwaps++; // add color exchange to the number of swaps
     }
   }
 
-  public Node findPartner(int nodeId, Integer[] nodes){
+  public Node findPartner(int nodeId, Integer[] nodes){ // find the best node as swap partner for node p
 
-    Node nodep = entireGraph.get(nodeId);
+    Node nodep = entireGraph.get(nodeId); // obtain a node from graph and call it p
 
-    Node bestPartner = null;
-    double highestBenefit = 0;
+    Node bestPartner = null; 
+    double highestBenefit = 0; 
 
     // TODO - done 
-    for(Integer q: nodes){ // equals line 19 of algo
-        Node nodeq = entireGraph.get(q);
-        int degree_pp = getDegree(nodep, nodep.getColor()); // equals line 20 of algo
-        int degree_qq = getDegree(nodeq, nodeq.getColor()); // equals line 21 of algo
+    for(Integer q: nodes){ // for q in nodes do (line 19 of algo)
+        Node nodeq = entireGraph.get(q); // obtain a node from graph and call it q
+        int degree_pp = getDegree(nodep, nodep.getColor()); // #neighbors of node p with same color as p (line 20 of algo)
+        int degree_qq = getDegree(nodeq, nodeq.getColor()); // #neighbors of node q with same color as q (line 21 of algo)
 
-        double old_d = Math.pow(degree_pp, config.getAlpha()) + Math.pow(degree_qq, config.getAlpha()); // equals line 22 of algo
+        double old_d = Math.pow(degree_pp, config.getAlpha()) + Math.pow(degree_qq, config.getAlpha()); // pairwise utility with alpha as energy function parameter (line 22 of algo)
 
-        int degree_pq = getDegree(nodep, nodeq.getColor()); // equals line 23 of algo
-        int degree_qp = getDegree(nodeq, nodep.getColor()); // equals line 24 of algo
+        int degree_pq = getDegree(nodep, nodeq.getColor()); // #neighbors of node p with same color as q (line 23 of algo)
+        int degree_qp = getDegree(nodeq, nodep.getColor()); // #neighbors of node q with same color as p (line 24 of algo)
 
-        double new_d = Math.pow(degree_pq, config.getAlpha()) + Math.pow(degree_qp, config.getAlpha()); // equals line 25 of algo
+        double new_d = Math.pow(degree_pq, config.getAlpha()) + Math.pow(degree_qp, config.getAlpha()); // pairwise utility with alpha as energy function parameter (line 25 of algo)
 
         if (annealing){ // added for annealing
             Random random = new Random(); // first generate a random solution
@@ -165,14 +165,14 @@ public class Jabeja {
             }
         }
         else{
-            if (new_d * T > old_d && new_d > highestBenefit){ // equals line 26 of algo
-                bestPartner = nodeq; // equals line 27 of algo
-                highestBenefit = new_d; // equals line 28 of algo
+            if (new_d * T > old_d && new_d > highestBenefit){ // annealing function of the paper (line 26 of algo)
+                bestPartner = nodeq; // update best partner (line 27 of algo)
+                highestBenefit = new_d; // update highest benefit (line 28 of algo)
             }
         }
     }
 
-    return bestPartner; // equals line 31 of algo
+    return bestPartner; // return best partner (line 31 of algo)
   }
 
   /**
