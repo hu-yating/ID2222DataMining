@@ -1,0 +1,9 @@
+Linux
+install gnuplot
+install maven
+optional install git to extract repository from https://github.com/smkniazi/id2222.git
+
+./compile.sh
+./run.sh -graph ./graphs/3elt.graph
+>> modify file name in output folder to e.g. "result" <<
+./plot.sh output/result.txt
