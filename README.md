@@ -1,6 +1,6 @@
 # ID2222DataMining
 
-For the course ID2222 Data Mining, we implement five small projects.
+For the course ID2222 Data Mining, we worked on five small projects.
 
 ### Finding Similar Items: Textually Similar Documents
 We implement the stages of finding textually similar documents based on Jaccard similarity using the shingling, minhashing, and locality-sensitive hashing (LSH) techniques and corresponding algorithms. 
